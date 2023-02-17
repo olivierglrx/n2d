@@ -3,26 +3,42 @@ import { ref } from "vue";
 import { Directus } from "@directus/sdk";
 
 const directus = new Directus("https://directus.rubidiumweb.eu");
-
-const listItems = ref([]);
-
+const sections = ref([]);
+const templates = ref([]);
 async function publicData() {
-  const publicData = await directus.items("section").readByQuery();
-  var L = publicData.data;
-  listItems.value = L;
+  const sectionDirectus = await directus.items("Section").readByQuery();
+  
+
+  const templateDirectus = await directus.items("Template").readByQuery();
+  templates.value=templateDirectus.data;
+  sectionDirectus.data.forEach(element=> 
+  {
+    element['templateName']=templateDirectus.data[element.templateToUse-1].templateName;
+  });
+  sections.value = sectionDirectus.data;
 }
 publicData();
-var show = false;
+
+
+
 </script>
 
 <template>
   <div>
-    <section v-for="item in listItems" :key="item.id">
-      <h1>{{ item.title }}</h1>
-      <div>numero du template : {{ item.template2 }}</div>
-      <component :is="'LazyMembreMember' + item.template2"></component>
-      <component :is="'LazyPublicationPub' + item.template2"></component>
-      <!-- <LazyMembreMember1 v-if="item.template2 === 1" /> -->
+    <section v-for="section in sections" :key="section.id">
+      <h1>{{ section.title }}</h1>  
+        <component :is="section.templateName"></component>
     </section>
   </div>
 </template>
+
+<style>
+h1 { 
+  display: block;
+  font-size: 2em;
+  margin-top: 0.67em;
+  margin-bottom: 0.67em;
+  font-weight: bold;
+  text-align: center;
+}
+</style>

@@ -1,5 +1,5 @@
 <template>
     <div>
- this is member3
+ this is news 3 templates
 </div>
 </template>
